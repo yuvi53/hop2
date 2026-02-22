@@ -37,7 +37,7 @@ pub fn add_path(path: PathBuf, data: &mut Vec<Data>, weight: Option<f64>) {
     if path == PathBuf::from(env::var("HOME").unwrap()) {
         return;
     }
-    match data::exist_in_database(&path) {                                              
+    match data::exist_in_database(&path) {
         false => {
             data.push(Data { weight, path });
         }
@@ -55,13 +55,14 @@ pub fn add_path(path: PathBuf, data: &mut Vec<Data>, weight: Option<f64>) {
     }
 }
 
-pub fn find_matches(needle: &str, mut entries: Vec<Data>) -> PathBuf{
+pub fn find_matches(needle: &str, mut entries: Vec<Data>) -> PathBuf {
     let is_cwd = |entry: &Data| {
-        let pwd = std::env::current_dir().expect("couldn't get the working directory"); 
+        let pwd = std::env::current_dir().expect("couldn't get the working directory");
         pwd == entry.path
     };
     let meets_threshold = |entry: &Data| {
-        let entry = entry.path
+        let entry = entry
+            .path
             .file_name()
             .expect("couldn't get the dir name")
             .to_str()
