@@ -1,6 +1,5 @@
 use dotenvy::dotenv;
 use std::env;
-use std::error::Error;
 use std::path::PathBuf;
 
 #[cfg(test)]
@@ -9,30 +8,23 @@ mod tests;
 pub mod data;
 pub mod search;
 
-#[derive(Debug, PartialEq, Clone)]
-pub struct Config {
-    pub data_path: PathBuf,
-    pub backup_path: PathBuf,
-}
-
 #[derive(PartialEq, Debug, Clone)]
 pub struct Data {
     pub weight: f64,
     pub path: PathBuf,
 }
 
-pub const BACKUP_THRESHOLD: u64 = 24 * 60 * 60;
 pub const FUZZY_MATCH_THRESHOLD: f64 = 0.6;
 
 pub fn set_defaults() -> PathBuf {
     dotenv().ok();
-    let data_home: PathBuf = match env::var("XDG_DATA_HOME") {
+    let mut data_home: PathBuf = match env::var("XDG_DATA_HOME") {
         Ok(path) => PathBuf::from(&path),
         Err(_) => [&env::var("HOME").unwrap(), ".local", "share"]
             .iter()
             .collect(),
     };
-    data_home.push("hop/hop.txt");
+    data_home.push("hop2/hop2.txt");
     data_home
 }
 
@@ -45,9 +37,7 @@ pub fn add_path(path: PathBuf, data: &mut Vec<Data>, weight: Option<f64>) {
     if path == PathBuf::from(env::var("HOME").unwrap()) {
         return;
     }
-    //remvoing the data.clone() call
-    match data::exist_in_database(path.as_ref()) { //you should know that database
-                                                               // of paths already
+    match data::exist_in_database(&path) {                                              
         false => {
             data.push(Data { weight, path });
         }
@@ -65,16 +55,13 @@ pub fn add_path(path: PathBuf, data: &mut Vec<Data>, weight: Option<f64>) {
     }
 }
 
-pub fn find_matches(needle: String, mut entries: Vec<Data>) -> Vec<Data> {
+pub fn find_matches(needle: &str, mut entries: Vec<Data>) -> PathBuf{
     let is_cwd = |entry: &Data| {
-        let pwd = std::env::current_dir().expect("couldn't get the working directory");
-        let pwd = pwd.to_str().expect("couldn't convert pwd to &str");
-        let entry_path = entry.path.to_str().unwrap();
-        pwd == entry_path
+        let pwd = std::env::current_dir().expect("couldn't get the working directory"); 
+        pwd == entry.path
     };
     let meets_threshold = |entry: &Data| {
-        let entry = entry
-            .path
+        let entry = entry.path
             .file_name()
             .expect("couldn't get the dir name")
             .to_str()
@@ -109,5 +96,5 @@ pub fn find_matches(needle: String, mut entries: Vec<Data>) -> Vec<Data> {
             matches.push(entry);
         }
     }
-    matches
+    matches[0].path.clone()
 }
