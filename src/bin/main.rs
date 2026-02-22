@@ -13,11 +13,10 @@ fn main() -> Result<(), Box<dyn Error>> {
         .arg(Arg::new("dir").long("dir").action(ArgAction::Set))
         .get_matches();
     if let Some(dir) = matches.get_one::<String>("dir") {
-        println!("{}",
-            find_matches(&dir, load(set_defaults())).display());
+        println!("{}", find_matches(&dir, load(set_defaults())).display());
     }
     if let Some(path) = matches.get_one::<String>("add") {
-        let mut entries = load(set_defaults()); 
+        let mut entries = load(set_defaults());
         add_path(PathBuf::from(&path), &mut entries, None);
         save(entries)?;
     }
