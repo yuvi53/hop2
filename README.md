@@ -1,4 +1,4 @@
-# Intorducting Hop2 a rust implementation [autojump](https://github.com/wting/autojump).
+# Intorducting Hop2 a Rust implementation of [autojump](https://github.com/wting/autojump).
 Well this thing is a work in progress some features work others don't, if it sounds something you can work with, feel free to use!
 
 # How to make it work
